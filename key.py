@@ -1,6 +1,4 @@
-# OpenAI API Key
-
-
-def api_key():
-    api_key = "YOUR_OPENAI_API_KEY"
-    return api_key
+with open('key.txt', 'r') as file:
+    # 첫 번째 줄 읽기
+    key = file.readline()
+    print(key)

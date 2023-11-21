@@ -1,4 +1,0 @@
-openai
-flask
-cv2
-base64
