@@ -1,21 +1,21 @@
-from IPython.display import display, Image, Audio
+# from IPython.display import display, Image, Audio
 
-import cv2  # We're using OpenCV to read video, to install !pip install opencv-python
+# import cv2  # We're using OpenCV to read video, to install !pip install opencv-python
 import base64
-import time
-import openai
-import os
-import requests
+# import time
+from openai import OpenAI
+# import os
+# import requests
 
 
 class Gpt4:
   def __init__(self, key) -> None:
     self.key = key
-    self.client = openai.OpenAI(api_key = key)
+    self.client = OpenAI(api_key = key)
 
-  def parse(self, img, sentence):
-    self.img = img
-    self.sentence = sentence
+  def parse(self, filepath, sentence):
+    base64_img = self._img_to_base64(filepath) # 저장된 이미지 파일을 불러와서 base64형식으로 변환
+
     response = self.client.chat.completions.create(
     model="gpt-4-vision-preview",
     messages=[
@@ -34,21 +34,18 @@ class Gpt4:
       {
         "role": "user",
         "content": [
-          {"type": "text", "text": "사이버 펑크느낌을 주고싶어"},
-          {
-            "type": "image_url",
-            "image_url": {
-              "url": "https://upload.wikimedia.org/wikipedia/commons/thumb/d/dd/Gfp-wisconsin-madison-the-nature-boardwalk.jpg/2560px-Gfp-wisconsin-madison-the-nature-boardwalk.jpg",
-              },
-            },
+          {"type": "text", "text": f"{sentence}"},
+          {"type": "image_url", "image_url": {"url": f"data:image/jpeg;base64,{base64_img}", "detail":"low"}},  # detail 필요시 high로 변경 가능
           ],
         }
       ],
       max_tokens=500,
     )
-    return response.choices[0]
+    return response.choices[0].message.content
 
-    
-
-
-
+  def _img_to_base64(self, filepath) -> str:
+    '''
+    이미지 파일을 filepath에서 불러와서 base64(string) 형식으로 변경
+    '''
+    with open(filepath, "rb") as image_file:
+      return base64.b64encode(image_file.read()).decode('utf-8')
