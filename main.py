@@ -3,7 +3,7 @@ from gpt4 import Gpt4
 import os
 
 app = Flask(__name__)
-UPLOAD_FOLDER = './gpt4_picturecorrection/img_dir'  # 이미지를 저장할 위치
+UPLOAD_FOLDER = 'img_dir'  # 이미지를 저장할 위치
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 @app.route('/', methods=['GET', 'POST'])
