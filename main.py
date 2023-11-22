@@ -5,6 +5,8 @@ import os
 app = Flask(__name__)
 UPLOAD_FOLDER = 'img_dir'  # 이미지를 저장할 위치
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+if not os.path.exists(app.config['UPLOAD_FOLDER']): #디렉토리 없는 경우 자동 생성
+            os.makedirs(app.config['UPLOAD_FOLDER'])
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
