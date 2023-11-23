@@ -5,7 +5,8 @@
 </head>
 <body>
     <h1>결과</h1>
-    <img src="{{ image }}" alt="Result Image">
+    <img src="{{ url_for('static', filename=image) }}" alt="Result Image">
+    <!-- <img src="{{ image }}" alt="Result Image" /> -->
     <p>{{ sentence }}</p>
     <button type="button" onclick="location.href='/'">다시</button>
 </body>
