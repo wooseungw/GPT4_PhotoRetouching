@@ -93,8 +93,8 @@ class ImageProcessor:
     def GetOutput(self):
         return self.output_img
 
-
-processor = ImageProcessor("C:/Workspace/gpt4_picturecorrection/img_dir/lena.png")
+#ex)
+processor = ImageProcessor("C:/Workspace/gpt4_picturecorrection/img_dir/IMG_1129.JPG")
 
 
 # 밝기 조정. 0.5로 설정하면 원본보다 밝아집니다.
@@ -103,7 +103,7 @@ cv2.imshow('Brightness adjusted', image)
 cv2.waitKey(0)
 
 # 대비 조정. 1.5로 설정하면 원본보다 대비가 강해집니다.
-image = processor.adjust_contrast(1.1)
+image = processor.adjust_contrast(1.5)
 cv2.imshow('Contrast adjusted', image)
 cv2.waitKey(0)
 
