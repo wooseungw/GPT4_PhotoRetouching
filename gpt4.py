@@ -30,20 +30,22 @@ class Gpt4:
         예시로 [retouch]\n밝기: 1.10, \n채도: 0.1, \n대비: 1.09, ... [/retouch]
         다 알려주면 대화 종료야. 항상 내가 말한 출력폼을 유지해줘"
         '''
-
+        #역할 지정
         SYSTEM_MESSAGE={
             "role": "system",
             "content": [
                 {"type": "text", "text": SYSTEM_INPUT},
             ],
         }
+        #입력 예시
         PROMPT_EX1 = {
             "role": "user",
             "content": [
                 {"type": "text", "text": "좀더 파스텔톤 느낌, 동화같은 느낌으로 만들고싶어"},
-                {"type": "image_url", "image_url": {"url": f"data:image/jpeg;base64,{base64_img}", "detail":"low"}},
+                {"type": "image_url", "image_url": {"url": f"data:image/jpeg;base64,{ex_img}", "detail":"low"}},
             ],
         }
+        #출력 예시
         PROMPT_RESULT1= {
             "role": "assistant",
             "content": [
@@ -53,6 +55,7 @@ class Gpt4:
                  "},
             ],
         }
+        #유저 입력
         PROMPT_MESSAGES ={
             "role": "user",
             "content": [
