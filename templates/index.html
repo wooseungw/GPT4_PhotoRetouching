@@ -3,19 +3,57 @@
 <head>
     <title>Image and Text Input</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+    <style>
+        .highlight {
+            border-radius: 25px;
+            padding: 20px;
+            background-color: #f2f2f2;
+            max-width: 100%; /* Container width */
+            margin: 0 auto; /* Center container */
+        }
+        .center-screen {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            position: relative;
+            overflow: hidden;
+        }
+        .center-screen .row {
+            position: absolute;
+            top: 30%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 60%; /* Adjust the width */
+        }
+        .form-label {
+            text-align: left;
+            display: block;
+        }
+    </style>
+
 </head>
 <body>
-    <div class="container-md">
-        <h1>이미지와 텍스트를 입력해주세요</h1>
-        <form action="/" method="post" enctype="multipart/form-data">
-            <label for="image">이미지:</label>
-            <input type="file" id="image" name="image" accept="image/*">
-            <br>
-            <label for="sentence">문장:</label>
-            <input type="text" id="sentence" name="sentence">
-            <br>
-            <input type="submit" value="제출">
-        </form>
+    <div class="container-md center-screen">
+        <div class="row mb-3 text-center">
+            <h1 class="text-start bg-light-text-emphasis">이미지와 텍스트를 입력해주세요!</h1>
+            <div class=" highlight">
+                <form action="/" method="post" enctype="multipart/form-data">
+                    <div class="mb-3">
+                        <label for="image" class="form-label">이미지</label>
+                        <input class="form-control" type="file" id="image" name="image" accept="image/*">
+                    </div>
+                    <br>
+                    <div class="mb-3">
+                        <label for="exampleFormControlTextarea1" class="form-label">문장</label>
+                        <textarea class="form-control" id="sentence" name="sentence" rows="5"></textarea>
+                    </div>
+                    <br>
+                    <button type="submit" class="btn btn-secondary ">제출</button>
+                </form>
+            </div>
+            
+        </div>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
