@@ -1,6 +1,6 @@
 import base64
 from openai import OpenAI
-
+import re
 
 class Gpt4:
     def __init__(self, key) -> None:
@@ -16,7 +16,7 @@ class Gpt4:
         너는 그 이미지의 어떤 오브젝트가 있는지와 광량, 추정된 위치 등을 바탕으로, 피사체를 강조하는게 좋을지 아니면 전체적인 분위기를 보여주는게 좋을지 말해주고,그런데 [text]로 시작해서[/text]로 끝내줘.
         내가 보내준 사진에 어울리는 사진보정방법을 알려줘야해.
         사진 보정법을 알려줄땐 [retouch]로시작해서 [/retouch]로 끝내야해 그리고 안에 사진 보정 속성 (채도,하이라이트,등 속성) 중 바꿔야 할 부분을 수치화 해서 알려줘. 다른 설명은 필요없어.
-        예시로 [retouch]\n채도 '10' \n하이라이트 '-20',... [/retouch]
+        예시로 [retouch]\n채도: 10, \n하이라이트: -20, ... [/retouch]
         다 알려주면 대화 종료야"
         '''
 
@@ -42,7 +42,9 @@ class Gpt4:
         }
 
         response = self.client.chat.completions.create(**params)
-        return response.choices[0].message.content
+        res_message = response.choices[0].message.content
+
+        return self._split_sentence_by_keyword(res_message, ['text', 'retouch'])
 
     def _img_to_base64(self, filepath) -> str:
         '''
@@ -50,3 +52,17 @@ class Gpt4:
         '''
         with open(filepath, "rb") as image_file:
             return base64.b64encode(image_file.read()).decode('utf-8')
+        
+    def _split_sentence_by_keyword(self, sentence: str, keywords: list) -> dict:
+        '''
+        sentence를 입력받으면 특정 keyword에 따라서 문장을 나눔
+        {key1: string, key2: string, ...}
+        '''
+        result = {}
+        for keyword in keywords:
+            pattern = fr'\[{keyword}\](.*?)\[/{keyword}\]'
+            match = re.search(pattern, sentence, re.DOTALL)
+            if match:
+                result[keyword] = match.group(1).strip()
+
+        return result
