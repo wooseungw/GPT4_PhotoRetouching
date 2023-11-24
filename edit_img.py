@@ -13,14 +13,16 @@ class ImageProcessor:
         :param beta: 밝기 조정 비율. -1~1 사이의 값을 가집니다. 양수면 밝아지고, 음수면 어두워집니다.
         """
         beta = 255 * beta
-        return cv2.convertScaleAbs(self.output_img, alpha=1, beta=beta)
+        self.output_img = cv2.convertScaleAbs(self.output_img, alpha=1, beta=beta)
+        return self.output_img
 
     def adjust_contrast(self, alpha):
         """
         대비를 조정합니다.
         :param alpha: 대비 조정 비율. 0~2 사이의 값을 가집니다. 1보다 크면 대비가 강해지고, 1보다 작으면 대비가 약해집니다.
         """
-        return cv2.convertScaleAbs(self.output_img, alpha=alpha, beta=0)
+        self.output_img = cv2.convertScaleAbs(self.output_img, alpha=alpha, beta=0)
+        return self.output_img
 
     def reduce_noise(self, h):
         """
@@ -29,7 +31,8 @@ class ImageProcessor:
         """
         h = 10 * h
         hColor = h
-        return cv2.fastNlMeansDenoisingColored(self.output_img, None, h, hColor, 7, 21)
+        self.output_img = cv2.fastNlMeansDenoisingColored(self.output_img, None, h, hColor, 7, 21)
+        return self.output_img
 
     def adjust_hue(self, h_scale):
         """
@@ -40,7 +43,8 @@ class ImageProcessor:
         h, s, v = cv2.split(hsv_image)
         h = np.clip(h * h_scale, 0, 180).astype(np.uint8)
         hsv_image = cv2.merge([h, s, v])
-        return cv2.cvtColor(hsv_image, cv2.COLOR_HSV2BGR)
+        self.output_img = cv2.cvtColor(hsv_image, cv2.COLOR_HSV2BGR)
+        return self.output_img
 
     def adjust_saturation(self, s_scale):
         """
@@ -51,7 +55,8 @@ class ImageProcessor:
         h, s, v = cv2.split(hsv_image)
         s = np.clip(s * s_scale, 0, 255).astype(np.uint8)
         hsv_image = cv2.merge([h, s, v])
-        return cv2.cvtColor(hsv_image, cv2.COLOR_HSV2BGR)
+        self.output_img = cv2.cvtColor(hsv_image, cv2.COLOR_HSV2BGR)
+        return self.output_img 
 
     def adjust_value(self, v_scale):
         """
@@ -62,7 +67,8 @@ class ImageProcessor:
         h, s, v = cv2.split(hsv_image)
         v = np.clip(v * v_scale, 0, 255).astype(np.uint8)
         hsv_image = cv2.merge([h, s, v])
-        return cv2.cvtColor(hsv_image, cv2.COLOR_HSV2BGR)
+        self.output_img = cv2.cvtColor(hsv_image, cv2.COLOR_HSV2BGR)
+        return self.output_img
 
     def sharpen(self, alpha):
         """
@@ -70,7 +76,8 @@ class ImageProcessor:
         :param alpha: 선명도 조정 비율. 0~2 사이의 값을 가집니다. 값이 클수록 선명해집니다.
         """
         blurred = cv2.GaussianBlur(self.output_img, (5,5), 0)
-        return cv2.addWeighted(self.output_img, alpha, blurred, 1-alpha, 0)
+        self.output_img = cv2.addWeighted(self.output_img, alpha, blurred, 1-alpha, 0)
+        return self.output_img
 
     def blur(self, beta):
         """
@@ -79,50 +86,60 @@ class ImageProcessor:
         """
         beta = beta * 50 + 1  # 1~51 사이의 홀수
         beta = int(beta) // 2 * 2 + 1  # 홀수로 만듭니다.
-        return cv2.GaussianBlur(self.output_img, (beta, beta), 0)
+        
+        self.output_img = cv2.GaussianBlur(self.output_img, (beta, beta), 0)
+        return self.output_img
+    
+    def GetOutput(self):
+        return self.output_img
 
 
 processor = ImageProcessor("C:/Workspace/gpt4_picturecorrection/img_dir/lena.png")
 
 
-# # 밝기 조정. 0.5로 설정하면 원본보다 밝아집니다.
-# image = processor.adjust_brightness(0.5)
-# cv2.imshow('Brightness adjusted', image)
-# cv2.waitKey(0)
+# 밝기 조정. 0.5로 설정하면 원본보다 밝아집니다.
+image = processor.adjust_brightness(0.1)
+cv2.imshow('Brightness adjusted', image)
+cv2.waitKey(0)
 
-# # 대비 조정. 1.5로 설정하면 원본보다 대비가 강해집니다.
-# image = processor.adjust_contrast(1.5)
-# cv2.imshow('Contrast adjusted', image)
-# cv2.waitKey(0)
+# 대비 조정. 1.5로 설정하면 원본보다 대비가 강해집니다.
+image = processor.adjust_contrast(1.1)
+cv2.imshow('Contrast adjusted', image)
+cv2.waitKey(0)
 
-# # 노이즈 감소. 1로 설정하면 노이즈 감소 효과가 강해집니다.
-# image = processor.reduce_noise(1)
-# cv2.imshow('Noise reduced', image)
-# cv2.waitKey(0)
+# 노이즈 감소. 1로 설정하면 노이즈 감소 효과가 강해집니다.
+image = processor.reduce_noise(1)
+cv2.imshow('Noise reduced', image)
+cv2.waitKey(0)
 
-# # 색상 조정. 1.5로 설정하면 색조가 바뀝니다.
-# image = processor.adjust_hue(1.5)
-# cv2.imshow('Hue adjusted', image)
-# cv2.waitKey(0)
+# 색상 조정. 1.5로 설정하면 색조가 바뀝니다.
+image = processor.adjust_hue(1.5)
+cv2.imshow('Hue adjusted', image)
+cv2.waitKey(0)
 
-# # 채도 조정. 1.5로 설정하면 색상이 선명해집니다.
-# image = processor.adjust_saturation(1.5)
-# cv2.imshow('Saturation adjusted', image)
-# cv2.waitKey(0)
+# 채도 조정. 1.5로 설정하면 색상이 선명해집니다.
+image = processor.adjust_saturation(1.5)
+cv2.imshow('Saturation adjusted', image)
+cv2.waitKey(0)
 
-# # 명도 조정. 1.5로 설정하면 밝기가 증가합니다.
-# image = processor.adjust_value(1.5)
-# cv2.imshow('Value adjusted', image)
-# cv2.waitKey(0)
+# 명도 조정. 1.5로 설정하면 밝기가 증가합니다.
+image = processor.adjust_value(1.5)
+cv2.imshow('Value adjusted', image)
+cv2.waitKey(0)
 
-# # 선명도 조정. 1.5로 설정하면 선명해집니다.
-# image = processor.sharpen(1.5)
-# cv2.imshow('Sharpened', image)
-# cv2.waitKey(0)
+# 선명도 조정. 1.5로 설정하면 선명해집니다.
+image = processor.sharpen(1.5)
+cv2.imshow('Sharpened', image)
+cv2.waitKey(0)
 
-# # 블러 효과. 0.5로 설정하면 블러 효과가 강해집니다.
-# image = processor.blur(0.5)
-# cv2.imshow('Blurred', image)
-# cv2.waitKey(0)
+# 블러 효과. 0.5로 설정하면 블러 효과가 강해집니다.
+image = processor.blur(0.2)
+cv2.imshow('Blurred', image)
+cv2.waitKey(0)
 
-# cv2.destroyAllWindows()
+image = processor.output_img
+
+cv2.imshow('END', image)
+cv2.waitKey(0)
+
+cv2.destroyAllWindows()
