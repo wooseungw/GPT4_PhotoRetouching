@@ -2,6 +2,7 @@ from flask import Flask, request, render_template
 from gpt4 import Gpt4
 import os
 import shutil
+from edit_img import *
 
 app = Flask(__name__)
 UPLOAD_FOLDER = './img_dir'  # 이미지를 저장할 위치
@@ -25,10 +26,19 @@ def index():
         shutil.copy(filepath, f'./static/{image.filename}')     # 이미지를 static 폴더에 복사 -> static 폴더에 있어야 html에서 출력가능
 
         sentence = request.form['sentence']  # 문장 받기
+        #문장 처리
         result_sentences = gpt4_instance.parse(filepath, sentence)  # 현재 문장만 생성하기 때문에 출력값 하나로 축소
+        #이미지 처리
+        processor  = ImageProcessor(filepath, retouch=result_sentences['retouch'])
+        result_img = processor.processing()
 
-        return render_template('result.html', image=image.filename, sentence_text=result_sentences['text'], sentence_retouch=result_sentences['retouch'])  # 결과 표시
-    
+
+        # 이미지 저장
+        cv2.imwrite(f"./static/result.jpg", result_img)
+
+        # 결과 표시
+        return render_template('result.html', original_image=image.filename, image="result.jpg", sentence_text=result_sentences['text'], sentence_retouch=result_sentences['retouch'])
+
     return render_template('index.html')  # 초기 페이지 표시
 
 if __name__ == "__main__":

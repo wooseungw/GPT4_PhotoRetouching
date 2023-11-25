@@ -3,9 +3,11 @@ import numpy as np
 #노출, 휘도,하이라이트,그림자,대비,밝기,블랙 포인트,채도,색 선명도,따듯함,색조,선명도,명료도,노이즈 감소,비네트
 #밝기,대비,노이즈,색상,채도,명도,사프니스,블러
 class ImageProcessor:
-    def __init__(self, image_path):
+    def __init__(self, image_path, retouch):
         self.origin_img = cv2.imread(image_path)
         self.output_img = self.origin_img
+        self.retouch = self.parse_retouch(retouch)
+        
 
     def adjust_brightness(self, beta):
         """
@@ -93,53 +95,46 @@ class ImageProcessor:
     def GetOutput(self):
         return self.output_img
 
-#ex)
-processor = ImageProcessor("C:/Workspace/gpt4_picturecorrection/img_dir/IMG_1129.JPG")
+    #retouch 기능 실행전 전처리
+    def parse_retouch(self, retouch):
+        retouch_dict = {}
+        retouch_items = retouch.split(",")  # 각 기능과 수치를 분리합니다.
+        for item in retouch_items:
+            key, value = item.split(":")  # 기능과 수치를 분리합니다.
+            key = key.strip()
+            value = float(value.strip())  # 수치를 실수로 변환합니다.
+            retouch_dict[key] = value
+        return retouch_dict
+
+    def processing(self):
+        # retouch 딕셔너리를 사용하여 이미지 처리기의 메서드를 호출합니다.
+        if "밝기" in self.retouch:
+            self.adjust_brightness(self.retouch["밝기"])
+        if "대비" in self.retouch:
+            self.adjust_contrast(self.retouch["대비"])
+        if "노이즈" in self.retouch:
+            self.reduce_noise(self.retouch["노이즈"])
+        if "색상" in self.retouch:
+            self.adjust_hue(self.retouch["색상"])
+        if "채도" in self.retouch:
+            self.adjust_saturation(self.retouch["채도"])
+        if "명도" in self.retouch:
+            self.adjust_value(self.retouch["명도"])
+        if "선명도" in self.retouch:
+            self.sharpen(self.retouch["선명도"])
+        if "블러" in self.retouch:
+            self.blur(self.retouch["블러"])
+
+        return self.GetOutput()  # 처리된 이미지를 가져옵니다.
 
 
-# 밝기 조정. 0.5로 설정하면 원본보다 밝아집니다.
-image = processor.adjust_brightness(0.1)
-cv2.imshow('Brightness adjusted', image)
-cv2.waitKey(0)
+# retouch = "밝기: 0.1, 대비: 0.9, 노이즈: 0.2, 색상: 1.05, 채도: 1.125, 명도: 1.155, 선명도: 1.32, 블러: 0.001"
 
-# 대비 조정. 1.5로 설정하면 원본보다 대비가 강해집니다.
-image = processor.adjust_contrast(1.5)
-cv2.imshow('Contrast adjusted', image)
-cv2.waitKey(0)
+# processor  = ImageProcessor("example_img\ex1.png",retouch=retouch)
+# print(processor.retouch)
+# image = processor.processing()
 
-# 노이즈 감소. 1로 설정하면 노이즈 감소 효과가 강해집니다.
-image = processor.reduce_noise(1)
-cv2.imshow('Noise reduced', image)
-cv2.waitKey(0)
+# cv2.imshow('END', image)
+# cv2.waitKey(0)
 
-# 색상 조정. 1.5로 설정하면 색조가 바뀝니다.
-image = processor.adjust_hue(1.5)
-cv2.imshow('Hue adjusted', image)
-cv2.waitKey(0)
-
-# 채도 조정. 1.5로 설정하면 색상이 선명해집니다.
-image = processor.adjust_saturation(1.5)
-cv2.imshow('Saturation adjusted', image)
-cv2.waitKey(0)
-
-# 명도 조정. 1.5로 설정하면 밝기가 증가합니다.
-image = processor.adjust_value(1.5)
-cv2.imshow('Value adjusted', image)
-cv2.waitKey(0)
-
-# 선명도 조정. 1.5로 설정하면 선명해집니다.
-image = processor.sharpen(1.5)
-cv2.imshow('Sharpened', image)
-cv2.waitKey(0)
-
-# 블러 효과. 0.5로 설정하면 블러 효과가 강해집니다.
-image = processor.blur(0.2)
-cv2.imshow('Blurred', image)
-cv2.waitKey(0)
-
-image = processor.output_img
-
-cv2.imshow('END', image)
-cv2.waitKey(0)
-
-cv2.destroyAllWindows()
+# cv2.destroyAllWindows()
